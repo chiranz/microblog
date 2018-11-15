@@ -10,3 +10,4 @@ app.config.from_object(os.environ['APP_SETTINGS'])
 
 
 from app import routes
+print(os.environ['APP_SETTINGS'])
