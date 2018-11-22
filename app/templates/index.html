@@ -2,12 +2,15 @@
 {% block content %}
 	<h1>Hi, {{ user.username }}</h1>
 	{% for post in posts %}
-		<div>
-			<p>
-				{{post.author.username}} says:
-				<b>{{ post.body }}</b>
-			</p>			
+		<div class="card">
+			<div class="card-header">{{post.author.username}} says:</div>
+			<div class="card-block">
+				<p class="card-text">{{post.body}}</p>
+			</div>
 		</div>
+		<br>
+
+		
 	{% endfor %}
 
 {% endblock %}

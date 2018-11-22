@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
 	{% if title %}
     	<title>{{ title }} -Microblog</title>
 	{% else %}
@@ -13,14 +14,65 @@
 </head>
 
 <body>
-	<div>
-		Microblog: 
-		<a href="/index">Home</a>
-		<a href="/login">Login</a>
-		<hr>
-	</div>
-	{% block content %}
+	<nav class="navbar navbar-light navbar-toggleable-sm bg-inverse navbar-inverse">
+        <div class="container">
+            <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+          <a class="navbar-brand" href="{{url_for('index')}}">Microblog</a>
+              <div class="collapse navbar-collapse" id="navbarNav">
+                  <ul class="navbar-nav mr-auto nav-pills">
+                      <li class="nav-item">
+                          <a class="nav-link active" href="{{url_for('index')}}">Home</a>
+                      </li>
+                      <li class="nav-item">
+                          <a class="nav-link" href="#">About</a>
+                      </li>
+
+
+                  </ul>
+
+                  <ul class="navbar-nav nav-pills">
+                  	{% if current_user.is_anonymous %}
+                  	  <li class="nav-item">
+                          <a class="nav-link" href="{{url_for('login')}}">Login</a>
+                      </li>
+                      <li class="nav-item">
+                          <a class="nav-link" href="{{url_for('register')}}">Sign Up</a>
+                      </li>
+                     {% else %}
+                  	  <li class="nav-item">
+                          <a class="nav-link" href="{{url_for('index')}}">Profile</a>
+                      </li>
+                      <li class="nav-item">
+                          <a class="nav-link" href="{{url_for('logout')}}">Logout</a>
+                      </li>
+                      {% endif %}
+                  </ul>
+              </div>
+
+          </div>
+    </nav>
+    <div class="container mt-3">
+    	{% with messages=get_flashed_messages(with_categories=true) %}
+    	{% if messages %}
+    		{% for category, message in messages %}
+	    		<div class="alert alert-{{category}}">
+	    			{{ message }}
+	    		</div>
+    		{% endfor %}
+    	{% endif %}
+    	{% endwith %}
+  
+    	{% block content %}
 	
+		{% endblock %}
+    </div>
+	{% block script %}
+		<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+	    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+	    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+
 	{% endblock %}
 </body>
 </html>
