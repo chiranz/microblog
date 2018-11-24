@@ -1,6 +1,8 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, BooleanField, SubmitField
-from wtforms.validators import DataRequired, Email, ValidationError, EqualTo
+from flask_wtf.file import FileField, FileAllowed
+from flask_login import current_user
+from wtforms import StringField, PasswordField, BooleanField, SubmitField, TextAreaField
+from wtforms.validators import DataRequired, Email, ValidationError, EqualTo, Length
 from app.models import User
 
 
@@ -24,12 +26,25 @@ class RegistrationForm(FlaskForm):
 	def validate_username(self, username):
 		user = User.query.filter_by(username=username.data).first()
 		if user is not None:
-			raise ValidationError('Username already taken! Use different username.', 'warning')
+			raise ValidationError('Username already taken! Use different username.')
 
 	def validate_username(self, email):
 		user = User.query.filter_by(email=email.data).first()
 		if user is not None:
-			raise ValidationError('Email already taken! Use different email.', 'warning')
+			raise ValidationError('Email already taken! Use different email.')
+
+class EditProfileForm(FlaskForm):
+	username = StringField('Username', validators=[DataRequired()])
+	about_me = TextAreaField('About Me', validators=[DataRequired(),
+				 Length(min=0, max=140)])
+	picture_file = FileField('Update Profile Picture', validators=[FileAllowed(['jpg', 'png'])])
+	update = SubmitField('Update')
+
+	def validate_username(self, username):
+		if username.data != current_user.username:
+			user = User.query.filter_by(username=username.data).first()
+			if user:
+				raise ValidationError('Username already taken! Use different username.')
 
 
 

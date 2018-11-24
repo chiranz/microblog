@@ -1,0 +1,20 @@
+body{
+background: #eee!important;
+}
+
+.navbar{
+	border-bottom: #bcbcbc 1px solid;
+	background: #ddd;
+	color: #8b1a1a!important;
+	opacity: 0.9;
+}
+.content-section {
+  background: #ffffff;
+  padding: 10px 20px;
+  border: 1px solid #dddddd;
+  border-radius: 10px;
+  margin-bottom: 20px;
+}
+.rounded-circle{
+	margin-right: 10px!important;
+}
