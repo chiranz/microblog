@@ -28,7 +28,7 @@ class RegistrationForm(FlaskForm):
 		if user is not None:
 			raise ValidationError('Username already taken! Use different username.')
 
-	def validate_username(self, email):
+	def validate_email(self, email):
 		user = User.query.filter_by(email=email.data).first()
 		if user is not None:
 			raise ValidationError('Email already taken! Use different email.')
@@ -39,6 +39,10 @@ class EditProfileForm(FlaskForm):
 				 Length(min=0, max=140)])
 	picture_file = FileField('Update Profile Picture', validators=[FileAllowed(['jpg', 'png'])])
 	update = SubmitField('Update')
+
+	def __init__(self, original_username, *args, **kwargs):
+		super(EditProfileForm, self).__init__(*args, **kwargs)
+		self.original_username=original_username
 
 	def validate_username(self, username):
 		if username.data != current_user.username:
