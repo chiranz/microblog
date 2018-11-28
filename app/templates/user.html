@@ -33,6 +33,21 @@
     </div>
 <hr>
   {% for post in posts %}
-	{% include '_post.html' %}
+	 {% include '_post.html' %}
   {% endfor %}
+
+    <div class="my-5">
+      {% if prev_url %}
+        <a href="{{prev_url}}" class="btn btn-primary">
+          <i class="fa fa-angle-double-left"></i> Newer
+        </a>
+      {% endif %}
+
+      {% if next_url %}
+        <a href="{{next_url}}" class="btn btn-primary float-right">
+          Older <i class="fa fa-angle-double-right"></i>
+        </a>
+      {% endif %}
+    </div>
+
 {% endblock content %}

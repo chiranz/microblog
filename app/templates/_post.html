@@ -1,13 +1,15 @@
-<table>
-	<tr valign="top">
-		<td>
-			<img src="{{post.author.avatar(36)}}" class="rounded-circle" alt="">
-		</td>
-		<td>
-			{{post.author.username}} says: <br>
-			{{post.body}}
-		</td>
-
-	</tr>
-</table>
-<hr>
+<div class="card bg-light">
+			<div class="card-body">
+				<div class="card-title">
+					<img src="{{post.author.avatar(36)}}" class="rounded-circle" alt="">
+					<a href="{{url_for('user', username=post.author.username)}}">	{{post.author.username}}
+					</a> says:
+					<small class="text-muted">
+						{{post.timestamp.strftime('%B %d - %H:%M:%S')}}
+					</small>
+				</div>
+				<div class="card-body">
+					<p>{{post.body}}</p>
+				</div>
+			</div>	
+		</div>

@@ -1,14 +1,47 @@
 {% extends 'base.html' %}
 {% block content %}
-	<h1>Hi, {{ user.username }}</h1>
+	<h1>Hi, {{ current_user.username }}</h1>
+	{% if form %}
+	  <div class="content-section mb-3">
+        <form method="POST" action="" enctype="multipart/form-data">
+            {{ form.hidden_tag() }}
+            <fieldset class="form-group">
+                <div class="form-group">
+                    {{ form.post.label(class="form-control-label") }}
+                    {% if form.post.errors %}
+                        {{ form.post(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.post.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.post(class="form-control form-control-lg") }}
+                    {% endif %}
+                </div>
+            </fieldset>
+            <div class="form-group">
+                {{ form.submit(class="btn btn-outline-info") }}
+            </div>
+        </form>
+    </div>
+    {% endif %}
 	{% for post in posts %}
-		<div class="card">
-			<div class="card-header">{{post.author.username}} says:</div>
-			<div class="card-block">
-				<p class="card-text">{{post.body}}</p>
-			</div>
-		</div>
-		<br>
+		{% include '_post.html' %}
 	{% endfor %}
+	<div class="my-5">
+		{% if prev_url %}
+			<a href="{{prev_url}}" class="btn btn-primary">
+				<i class="fa fa-angle-double-left"></i> Newer
+			</a>
+		{% endif %}
+
+		{% if next_url %}
+			<a href="{{next_url}}" class="btn btn-primary float-right">
+				Older <i class="fa fa-angle-double-right"></i>
+			</a>
+		{% endif %}
+	</div>
+	
 
 {% endblock %}

@@ -6,8 +6,8 @@ from PIL import Image
 from flask import render_template, flash, redirect, url_for, request
 from werkzeug.urls import url_parse
 from flask_login import current_user, login_user, logout_user, login_required
-from app.models import User
-from app.forms import LoginForm, RegistrationForm, EditProfileForm
+from app.models import User, Post
+from app.forms import LoginForm, RegistrationForm, EditProfileForm, PostForm
 
 
 @app.before_request
@@ -21,11 +21,21 @@ def before_request():
 @app.route('/index', methods=['GET', 'POST'])
 @login_required
 def index():
-    user = current_user
-    posts = [
-    {'author': {'username': 'Chiranz'}, 'body': 'Beautiful day in kolkatta!'},
-    {'author': {'username': 'Chiranz'}, 'body': 'What a wonderful world!'}]
-    return render_template('index.html', user=user, title='Home', posts=posts)
+	user = current_user
+	form=PostForm()
+	if form.validate_on_submit():
+		post = Post(body=form.post.data, author=current_user)
+		db.session.add(post)
+		db.session.commit()
+		flash('Your post is now live!', 'success')
+		return redirect(url_for('index'))
+	page = request.args.get('page', 1, type=int)
+	posts = Post.query.order_by(Post.timestamp.desc())\
+			.paginate(page, app.config['POSTS_PER_PAGE'], False)
+	next_url = url_for('index', page=posts.next_num) if posts.has_next else None
+	prev_url = url_for('index', page=posts.prev_num) if posts.has_prev else None
+	return render_template('index.html', user=user, title='Home', posts=posts.items,
+	 				form=form, prev_url=prev_url, next_url=next_url)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -68,12 +78,18 @@ def register():
 @login_required
 def user(username):
 	user = User.query.filter_by(username=username).first_or_404()
-	posts = [{'author': user, 'body': '#Test post 1'},
-	 {'author': user, 'body': '#Test post 2'}]
+	page = request.args.get('page', 1, type=int)
+	posts = user.posts.order_by(Post.timestamp.desc())\
+			.paginate(page, app.config['POSTS_PER_PAGE'], False)
 	image_file=None
 	if current_user.picture_file:
 		image_file = url_for('static', filename='profile_pics/' + current_user.picture_file)
-	return render_template('user.html', posts=posts, user=user, image_file=image_file)
+	next_url = url_for('user',username=user.username, page=posts.next_num)\
+				 if posts.has_next else None
+	prev_url = url_for('user',username=user.username, page=posts.prev_num)\
+				 if posts.has_prev else None	
+	return render_template('user.html', posts=posts.items, user=user, 
+		image_file=image_file, next_url=next_url, prev_url=prev_url)
 
 
 def save_picture(form_picture):
@@ -140,8 +156,19 @@ def unfollow(username):
 	return redirect(url_for('user', username=username))
 
 
-
 @app.route('/logout')
 def logout():
 	logout_user()
 	return redirect(url_for('index'))
+
+@app.route('/explore')
+@login_required
+def explore():
+	page = request.args.get('page', 1, type=int)
+	posts = Post.query.order_by(Post.timestamp.desc())\
+			.paginate(page, app.config['POSTS_PER_PAGE'], False)
+	next_url = url_for('explore', page=posts.next_num) if posts.has_next else None
+	prev_url = url_for('explore', page=posts.prev_num) if posts.has_prev else None
+	return render_template('index.html',title="Explore", posts=posts.items,
+			prev_url=prev_url, next_url=next_url)
+
